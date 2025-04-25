@@ -1,16 +1,18 @@
-from django.shortcuts import render
-from rest_framework import viewsets
-from rest_framework import mixins
+from requests import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet
+from django.shortcuts import get_object_or_404
 
-from .models import User
-from .serializers import UserSerializer
+from .models import Profile
+from .serializers import ProfileSerializer
 
 
 # Create your views here.
 
-def index(request):
-    pass
+class ProfileViewSet(ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileSerializer
 
-class UserViewSet(mixins.CreateModelMixin):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+    def get_queryset(self):
+        return Profile.objects.filter(user=self.request.user)
+        # return get_object_or_404(Profile, user__id=self.request.user.id)

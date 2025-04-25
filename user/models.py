@@ -15,5 +15,5 @@ class Profile(models.Model):
         FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png']),
     ])
     address = models.TextField(null=True, blank=True)
-    nin = models.CharField(max_length=11, unique=True)
+    nin = models.CharField(max_length=11,  unique=True)
     bvn = models.CharField(max_length=11, unique=True)

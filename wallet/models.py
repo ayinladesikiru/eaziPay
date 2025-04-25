@@ -13,6 +13,16 @@ class Wallet(models.Model):
     def deposit(self, amount):
         if amount > Decimal("0.00"):
             self.balance += amount
+            self.save()
+            return True
+        return False
+
+    def withdraw(self, amount):
+        if amount > Decimal("0.00"):
+            if amount <= self.balance:
+                self.balance -= amount
+                self.save()
+                return True
         return False
 
 

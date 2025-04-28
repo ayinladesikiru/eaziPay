@@ -7,4 +7,7 @@ router = DefaultRouter()
 router.register('profile', ProfileViewSet, basename='profile')
 
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('', include(router.urls)),
+    path('dashboard/', views.DashBoardView.as_view(), name='dashboard')
+]

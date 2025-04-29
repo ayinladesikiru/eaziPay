@@ -1,11 +1,13 @@
-from requests import Response
+from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.db.models import Q
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from django.shortcuts import get_object_or_404
 
+from wallet.models import Transaction, Wallet
 from .models import Profile, User
-from .serializers import ProfileSerializer, DashBoardSerializer
+from .serializers import ProfileSerializer, WalletSerializer, TransactionSerializer
 
 
 # Create your views here.
@@ -28,9 +30,15 @@ class ProfileViewSet(ModelViewSet):
             return [IsAuthenticated()]
 
 
-class DashBoardView(generics.ListAPIView):
+class DashBoardView(APIView):
     permission_classes = [IsAuthenticated]
-    serializer_class = DashBoardSerializer
+    #serializer_class = DashBoardSerializer
 
-    def get_queryset(self):
-        return User.objects.filter(id=self.request.user.id)
+    def get(self, request):
+        try:
+            transactions = Transaction.objects.filter(Q(sender=request.user) | Q(receiver=request.user)).order_by('-transaction_date')[:5]
+            serializer = TransactionSerializer(transactions, many=True)
+            return Response({"transactions": serializer.data}, status=200)
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+
